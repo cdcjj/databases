@@ -38,9 +38,9 @@ describe('Persistent Node Chat Server', function() {
       request({
         method: 'POST',
         uri: 'http://127.0.0.1:3000/classes/messages',
-        json: {
+        json: { 
           username: 'Valjean',
-          message: 'In mercy\'s name, three days is all I need.',
+          text: 'In mercy\'s name, three days is all I need.',
           roomname: 'Hello'
         }
       }, function () {
@@ -53,8 +53,6 @@ describe('Persistent Node Chat Server', function() {
         var queryArgs = [];
 
         dbConnection.query(queryString, queryArgs, function(err, results) {
-          // Should have one result:
-          console.log(results);
           expect(results.length).to.equal(1);
 
           // TODO: If you don't have a column named text, change this test.
@@ -86,8 +84,6 @@ describe('Persistent Node Chat Server', function() {
               // the message we just inserted:
               request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
                 var messageLog = JSON.parse(body);
-                // expect(messageLog[0].text).to.equal('In mercy\'s name, three days is all I need.');
-                // expect(messageLog[0].roomname).to.equal('Hello');
                 expect(messageLog[0].text).to.equal('Men like you can never change!');
                 expect(messageLog[0].roomname).to.equal('main');
                 done();

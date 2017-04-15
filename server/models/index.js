@@ -10,11 +10,9 @@ module.exports = {
     get: function (callback) {
       connection.connect(function() {
         connection.query(getAllMessages, [], function(error, rows) {
-          if(error) {
-            console.log('-----------------------------------------error !@#', error);
+          if (error) {
             throw error;
           } else {
-            console.log('------------------------------------------query ended\nresults: ', JSON.stringify(rows));
             callback(null, rows);
           }
         });
@@ -22,32 +20,22 @@ module.exports = {
     }, // a function which produces all the messages
     post: function (message, callback) {
       connection.connect(function() {
-        // console.log('starting POST_---------------------------');
         insertIntoTable('rooms', 'name', message.roomname, function(err, roomid) {
           if (err) {
-            console.log('Insert room error: ', err);
             throw err;
-            // callback(err, null);
           }
-          // console.log('_______________________________________________________________roomid while adding msg ', roomid);
           insertIntoTable('users', 'username', message.username, function(err, userid) {
-            // console.log('_______________________________________________________________userid while adding msg ', userid);
             if (err) {
-              // console.log('Insert user error: ', err);
               callback(err, null);
             }
-            var queryString = 'INSERT INTO messages (text, createdAt, room, user) VALUES (?, ?, ?, ?)';
-            var qArgs = [message.message, message.createdAt? message.createdAt : null, roomid, userid];
-            // console.log('text, cAt, roomid, userid ========================================================== ', qArgs, ' asdf ', message);
+            var queryString = 'INSERT INTO messages (text, room, user) VALUES (?, ?, ?)';
+            var qArgs = [message.text, roomid, userid];
 
             connection.query(queryString, qArgs, function(err, result) {
               if (err) {
-                console.log('Query--Insert message error: ', err);
                 throw err;
               }
-              // console.log('end=======================================asdf');
               callback(err, result);
-              //connection.end();
             });
 
           });
@@ -61,7 +49,7 @@ module.exports = {
     get: function (req, callback) {
       connection.connect(function(error) {
         connection.query('SELECT * FROM users', function(error, rows) {
-          if(error) {
+          if (error) {
             throw error;
           } else {
             callback(null, rows);
@@ -70,13 +58,11 @@ module.exports = {
       });
     },
     post: function (user, callback) {
-      connection.connect(function(error){
-        // console.log('IN POST MODEL USERS________________________', user);
+      connection.connect(function(error) {
         insertIntoTable('users', 'username', user.username, function(err, id) {
           if (err) {
             throw err;
           }
-          console.log("Success!!! :D", id);
           callback();
         });
       });
