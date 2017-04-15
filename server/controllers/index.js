@@ -6,7 +6,7 @@ module.exports = {
       res.send(models.messages.get());
     }, // a function which handles a get request for all messages
     post: function (req, res) {
-      console.log('in controllers:::: req.body of POST          ', req.body);
+      console.log('in controllers::::=================== req.body of POST       ******   ', JSON.stringify(req.body));
       models.messages.post(req.body);
       res.end();
     } // a function which handles posting a message to the database
@@ -18,7 +18,8 @@ module.exports = {
       res.end(models.users.get());
     },
     post: function (req, res) {
-      models.users.post(req); 
+      console.log('==============================username>>>>>>', JSON.stringify(req.body))
+      models.users.post(req.body); 
       res.end();
     }
   }

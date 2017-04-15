@@ -48,4 +48,4 @@ CREATE TABLE users (
 ALTER TABLE messages ADD FOREIGN KEY (room) REFERENCES rooms (id);
 ALTER TABLE messages ADD FOREIGN KEY (user) REFERENCES users (id);
 ALTER TABLE rooms ADD UNIQUE KEY newKey (name);
-ALTER TABLE users ADD UNIQUE KEY userKey (name);
+ALTER TABLE users ADD UNIQUE KEY userKey (username);

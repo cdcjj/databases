@@ -34,8 +34,16 @@ module.exports = {
 
   users: {
     // Ditto as above.
-    get: function (req) {},
-    post: function () {}
+    get: function (req) {
+
+    },
+    post: function (user) {
+      console.log(user.username);
+      db.insertIntoTable('users', 'username', user.username, function(err, id){
+        if(err) throw err;
+        console.log("Success!!! :D", id);
+      })
+    }
   }
 };
 
