@@ -48,7 +48,7 @@ module.exports = {
     // Ditto as above.
     get: function (req, callback) {
       connection.connect(function(error) {
-        connection.query('SELECT * FROM users', function(error, rows) {
+        connection.query('SELECT username FROM users ORDER BY id', function(error, rows) {
           if (error) {
             throw error;
           } else {

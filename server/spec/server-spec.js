@@ -20,7 +20,16 @@ describe('Persistent Node Chat Server', function() {
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
-    dbConnection.query('truncate ' + tablename, done);
+    dbConnection.query('truncate rooms', function() {
+      dbConnection.query('truncate users', function() {
+        dbConnection.query('truncate ' + tablename, function() {
+          dbConnection.query('SELECT * FROM users', function(err, response) {
+            console.log('IN SPEC RESULTS---------->', response);
+            done();
+          });
+        });
+      });
+    });
   });
 
   afterEach(function() {
@@ -74,8 +83,8 @@ describe('Persistent Node Chat Server', function() {
         dbConnection.query('INSERT INTO users (username) VALUES (\'Valjean\')', function(err) {
           dbConnection.query('SELECT id FROM users WHERE username=\'Valjean\'', function(err, userID) {
             
-            var queryString = 'INSERT INTO messages (text, createdAt, room, user) VALUES (?, ?, ?, ?)';
-            var queryArgs = ['Men like you can never change!', null, response[0].id, userID[0].id ];
+            var queryString = 'INSERT INTO messages (text, room, user) VALUES (?, ?, ?)';
+            var queryArgs = ['Men like you can never change!', response[0].id, userID[0].id ];
             
             dbConnection.query(queryString, queryArgs, function(err) {
               if (err) { throw err; }
@@ -93,6 +102,27 @@ describe('Persistent Node Chat Server', function() {
         });
       });
     });
+  });
 
+  it('Should get all users from the DB', function(done) {
+
+    request({
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/users',
+      json: { username: 'Valjean' }
+    }, function () {
+      request({
+        method: 'POST',
+        uri: 'http://127.0.0.1:3000/classes/users',
+        json: { username: 'Guillermo' }
+      }, function() {
+        request('http://127.0.0.1:3000/classes/users', function(error, response, body) {
+          var messageLog = JSON.parse(body);
+          expect(messageLog[0].username).to.equal('Valjean');
+          expect(messageLog[1].username).to.equal('Guillermo');
+          done();
+        });
+      });
+    });
   });
 });

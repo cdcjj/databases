@@ -34,9 +34,9 @@ module.exports = {
   users: {
     // Ditto as above
     get: function (req, res) {
-      models.users.get(function(err, results) {
+      models.users.get(req, function(err, results) {
         res.json(results);
-        res.end();   
+        res.end();
       });
     },
     post: function (req, res) {
