@@ -4,7 +4,6 @@ dbConnection = mysql.createConnection({
   password: '',
   database: 'chat'
 });
-dbConnection.connect();
 exports.dbConnection = dbConnection;
 
 // Create a database connection and export it from this file.
@@ -15,60 +14,48 @@ var insertIntoTable = function(tableName, fieldname, value, callback) {
   var queryString = `INSERT IGNORE INTO ${tableName} (${fieldname}) VALUES (?)`;
   var queryArgs = [value];
   dbConnection.query(queryString, queryArgs, function(err, result) {
+    // console.log('===================================================', JSON.stringify(result));
     if (err) {
-      console.log(err);
-      callback(err, null);
+      throw err;
+      // callback(err, null);
     } else {
+      // console.log('PASSED INSERT in ELSE:::::::::::::::::::::::::::::value = ', value);
+     
       dbConnection.query(`SELECT id FROM ${tableName} WHERE ${fieldname}=?`, value, function(err, result) {
-        console.log('===================================================', JSON.stringify(result));
+        // console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~FIRST LINE OF SELECT');
         if (err) {
-          console.log(err);
-          callback(err, null);
+          throw err;
+          // callback(err, null);
         } else {
+          // console.log('PASSED SELECT ID????????????????????????');
           callback(null, result[0].id);
         }
+        // console.log('AFTER WUERY SELECT');
       });
     }
   });
 };
 
-exports.insertMessage = function(message, callback) {
-  insertIntoTable('rooms', 'name', message.roomname, function(err, roomid) {
-    if (err) {
-      console.log('Insert room error: ', err);
-      callback(err, null);
-    }
-    insertIntoTable('users', 'username', message.username, function(err, userid) {
-      console.log('asdf======================================asdf', userid);
-      if (err) {
-        console.log('Insert user error: ', err);
-        callback(err, null);
-      }
-      var queryString = 'INSERT INTO messages (text, createdAt, room, user) VALUES (?, ?, ?, ?)';
-      var qArgs = [message.text, message.createdAt, roomid, userid];
+// var queryServer = function(tableName, fieldname, value, callback) {
+//   dbConnection.query(`SELECT id FROM ${tableName} WHERE ${fieldname}='?'`, value, function(err, result) {
+//     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~FIRST LINE OF SELECT');
+//     if (err) {
+//       callback(err, null);
+//     } else {
+//       console.log('PASSED SELECT ID????????????????????????');
+//       callback(null, result[0].id);
+//     }
+//   });
+//   console.log('AFTER WUERY SELECT');
+// };
 
-      dbConnection.query(queryString, qArgs, function(err, result) {
-        if (err) {
-          console.log('Insert message error: ', err);
-          throw err;
-        }
-        console.log('=======================================asdf')
-        callback(err, result);
-      });
-
-    });
-  });
-};
-
-exports.insertMessage({username: 'doris', roomname: 'rooms', text: 'kitchen'}, function(err, res){
-  if(err) {
-    console.log(err);
-  } else {
-    console.log(res);
-  }
-  //dbConnection.end();
-});
+// exports.insertMessage({username: 'doris', roomname: 'rooms', text: 'kitchen'}, function(err, res){
+//   if(err) {
+//     console.log(err);
+//   } else {
+//     console.log(res);
+//   }
+//   //dbConnection.end();
+// });
 
 exports.insertIntoTable = insertIntoTable;
-
-//dbConnection.end();
