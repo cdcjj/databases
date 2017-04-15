@@ -68,23 +68,35 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-       var queryString = "SELECT * FROM messages m INNER JOIN users u ON m.user = u.id INNER JOIN rooms r ON m.room = r.id";
-       var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
     // them up to you. */
+    dbConnection.query('INSERT INTO rooms (name) VALUES (\'main\')', function(err) {
+      dbConnection.query('SELECT id FROM rooms WHERE name=\'main\'', function(err, response) {
+        dbConnection.query('INSERT INTO users (username) VALUES (\'Valjean\')', function(err) {
+          dbConnection.query('SELECT id FROM users WHERE username=\'Valjean\'', function(err, userID) {
+            
+            var queryString = 'INSERT INTO messages (text, createdAt, room, user) VALUES (?, ?, ?, ?)';
+            var queryArgs = ['Men like you can never change!', null, response[0].id, userID[0].id ];
+            
+            dbConnection.query(queryString, queryArgs, function(err) {
+              if (err) { throw err; }
 
-    dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
-
-      // Now query the Node chat server and see if it returns
-      // the message we just inserted:
-      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-        var messageLog = JSON.parse(body);
-        expect(messageLog[0].text).to.equal('Men like you can never change!');
-        expect(messageLog[0].roomname).to.equal('main');
-        done();
+              // Now query the Node chat server and see if it returns
+              // the message we just inserted:
+              request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+                var messageLog = JSON.parse(body);
+                // expect(messageLog[0].text).to.equal('In mercy\'s name, three days is all I need.');
+                // expect(messageLog[0].roomname).to.equal('Hello');
+                expect(messageLog[0].text).to.equal('Men like you can never change!');
+                expect(messageLog[0].roomname).to.equal('main');
+                done();
+              });
+            });
+          });
+        });
       });
     });
+
   });
 });

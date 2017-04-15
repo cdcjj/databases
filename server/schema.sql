@@ -16,7 +16,7 @@ USE chat;
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
-DROP TABLE IF EXISTS rooms;
+-- DROP TABLE IF EXISTS rooms;
     
 CREATE TABLE rooms (
   id INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE rooms (
 );
 
 
-DROP TABLE IF EXISTS messages;
+-- DROP TABLE IF EXISTS messages;
     
 CREATE TABLE messages (
   objectId INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE messages (
   PRIMARY KEY (objectId)
 );
 -- Table users
-DROP TABLE IF EXISTS users;
+-- DROP TABLE IF EXISTS users;
     
 CREATE TABLE users (
   id INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
